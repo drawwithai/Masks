@@ -1,3 +1,5 @@
+#!/usr/bin/python3.7
+
 # import cv2
 # import numpy as np
 #
@@ -30,20 +32,23 @@
 import cv2
 import numpy as np
 from PIL import Image
+import argparse
+import os
 
-# Load image, create mask, and draw white circle on mask
-image = cv2.imread('rose.png')
-mask = np.zeros(image.shape, dtype=np.uint8)
-mask = cv2.circle(mask, (260, 300), 225, (255,255,255), -1)
+parser = argparse.ArgumentParser(description='Mask all images from input dir to output dir')
+parser.add_argument('input', type=str, help='Input directory')
+parser.add_argument('output', type=str, help='Output directory')
 
-# Mask input image with binary mask
-masked = cv2.bitwise_and(image, mask)
-# Color background white
-masked[mask==0] = 255 # Optional
+args = parser.parse_args()
 
-cv2.imwrite('masked.png', masked)
+for file in os.listdir(args.input):
+    if file.endswith(".jpg") :
+        input = os.path.join(args.input, file)
+        output = os.path.join(args.output, file)
+        # print(input, output)
 
-cv2.imshow('image', image)
-cv2.imshow('mask', mask)
-cv2.imshow('result', masked)
-cv2.waitKey()
+        image = cv2.imread(input)
+        mask = np.zeros(image.shape, dtype=np.uint8)
+        mask = cv2.circle(mask, (260, 300), 225, (255,255,255), -1)
+        masked = cv2.bitwise_and(image, mask)
+        cv2.imwrite(output, masked)
